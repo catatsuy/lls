@@ -1,0 +1,23 @@
+project_name: lls
+env:
+  - GO111MODULE=on
+before:
+  hooks:
+    - go mod tidy
+builds:
+  - main: ./main.go
+    binary: lls
+    ldflags:
+      - -s -w
+      - -X github.com/catatsuy/lls/cli.Version=v{{.Version}}
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm64
+archives:
+  - name_template: '{{ .ProjectName }}-{{ .Os }}-{{ .Arch }}'
+release:
+  prerelease: auto
