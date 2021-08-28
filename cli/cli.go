@@ -95,12 +95,18 @@ func (c *CLI) run(target string, debug bool, bufSize int64) int {
 		return ExitCodeFail
 	}
 
+	finfo, err := f.Stat()
+	if err != nil {
+		fmt.Fprintln(c.errStream, err)
+		return ExitCodeFail
+	}
+
+	if !finfo.IsDir() {
+		fmt.Fprintln(c.errStream, "not a directory")
+		return ExitCodeFail
+	}
+
 	if bufSize == 0 {
-		finfo, err := f.Stat()
-		if err != nil {
-			fmt.Fprintln(c.errStream, err)
-			return ExitCodeFail
-		}
 		bufSize = finfo.Size()
 	}
 
