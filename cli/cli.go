@@ -129,6 +129,11 @@ func (c *CLI) run(target string, debug bool, bufSize int64) int {
 
 		bb := (*[256]byte)(unsafe.Pointer(&dirent.Name[0]))
 		name := string(bb[0:blen(*bb)])
+
+		if name == "." || name == ".." {
+			// ignore
+			continue
+		}
 		fmt.Fprintln(c.outStream, name)
 	}
 
