@@ -24,7 +24,7 @@ If you want to reduce the memory usage, you can specify the `-buf-size` option. 
 
 ### Q: I can't run lls
 
-If the size of the directory is larger than 2GB, you may get the following error.
+If the size of the directory (`ls -dl`) is larger than 2GB, you may get the following error.
 
 ```
 $ lls
