@@ -22,7 +22,7 @@ If you want to reduce the memory usage, you can specify the `-buf-size` option. 
 
 ## FAQs
 
-### I can't run lls
+### Q: I can't run lls
 
 If the size of the directory is larger than 2GB, you may get the following error.
 
@@ -37,7 +37,7 @@ You can specify the size of the buffer by passing the `-buf-size` option. You ca
 $ lls -buf-size 2147483647
 ```
 
-### I can't get a list of all files
+### Q: I can't get a list of all files
 
 Maybe the size of the buffer is too small.
 
@@ -50,6 +50,6 @@ bufSize: 4096; getdents ret: 4080
 
 The `bufSize` is the actual size of the buffer passed to the system call, and `getdents ret` is the return value of the getdents system call, which is the number of bytes actually used in the buffer.
 
-It consumes `(20+filename) bytes` per file. If the difference between these two numbers is less than one file, it is possible that there are still other files, but we are not able to list all of them.
+It consumes about `(20+filename) bytes` per file. If the difference between these two numbers is less than one file, it is possible that there are still other files, but we are not able to list all of them.
 
 If you give a larger number to the `-buf-size` option, you should get a list of all files.
