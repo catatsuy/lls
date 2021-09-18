@@ -19,6 +19,9 @@ const (
 	ExitCodeOK             = 0
 	ExitCodeParseFlagError = 1
 	ExitCodeFail           = 1
+
+	// 5MB
+	DefaultBufSize = 5 * 1024 * 1024
 )
 
 type CLI struct {
@@ -47,15 +50,15 @@ func (c *CLI) Run(args []string) int {
 	var (
 		version bool
 		debug   bool
-		bufSize int64
+		bufSize int
 	)
 
 	flags := flag.NewFlagSet("lls", flag.ContinueOnError)
 	flags.SetOutput(c.errStream)
 
-	flags.Int64Var(&bufSize, "buf-size", 0, "specify buf size")
+	flags.IntVar(&bufSize, "buf-size", DefaultBufSize, "specify buf size")
 
-	flags.BoolVar(&version, "version", false, "Print version information and quit")
+	flags.BoolVar(&version, "version", false, "print version information and quit")
 	flags.BoolVar(&debug, "debug", false, "debug mode")
 
 	err := flags.Parse(args[1:])
@@ -88,7 +91,7 @@ func (c *CLI) Run(args []string) int {
 	return c.run(target, debug, bufSize)
 }
 
-func (c *CLI) run(target string, debug bool, bufSize int64) int {
+func (c *CLI) run(target string, debug bool, bufSize int) int {
 	f, err := os.Open(target)
 	if err != nil {
 		fmt.Fprintln(c.errStream, err)
@@ -107,41 +110,41 @@ func (c *CLI) run(target string, debug bool, bufSize int64) int {
 		return ExitCodeFail
 	}
 
-	if bufSize == 0 {
-		bufSize = finfo.Size()
-	}
-
-	// about actual size: 20 + filename
-	// ls -dl
 	buf := make([]byte, bufSize)
-	n, err := syscall.Getdents(int(f.Fd()), buf)
-	if err != nil {
-		fmt.Fprintln(c.errStream, err)
-		return ExitCodeFail
-	}
 
-	if debug {
-		fmt.Fprintf(c.errStream, "bufSize: %d; getdents ret: %d\n", bufSize, n)
-		return ExitCodeOK
-	}
-
-	for bufp := 0; bufp < n; {
-		dirent := (*syscall.Dirent)(unsafe.Pointer(&buf[bufp]))
-		bufp += int(dirent.Reclen)
-
-		// deleted file
-		if dirent.Ino == 0 {
-			continue
+	for {
+		n, err := syscall.Getdents(int(f.Fd()), buf)
+		if err != nil {
+			fmt.Fprintln(c.errStream, err)
+			return ExitCodeFail
 		}
 
-		bb := (*[256]byte)(unsafe.Pointer(&dirent.Name[0]))
-		name := string(bb[0:blen(*bb)])
-
-		if name == "." || name == ".." {
-			// ignore
-			continue
+		if n == 0 {
+			break
 		}
-		fmt.Fprintln(c.outStream, name)
+
+		if debug {
+			fmt.Fprintf(c.errStream, "bufSize: %d; getdents ret: %d\n", bufSize, n)
+		}
+
+		for bufp := 0; bufp < n; {
+			dirent := (*syscall.Dirent)(unsafe.Pointer(&buf[bufp]))
+			bufp += int(dirent.Reclen)
+
+			// deleted file
+			if dirent.Ino == 0 {
+				continue
+			}
+
+			bb := (*[256]byte)(unsafe.Pointer(&dirent.Name[0]))
+			name := string(bb[0:blen(*bb)])
+
+			if name == "." || name == ".." {
+				// ignore
+				continue
+			}
+			fmt.Fprintln(c.outStream, name)
+		}
 	}
 
 	return ExitCodeOK
