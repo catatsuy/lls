@@ -14,9 +14,9 @@ func TestRun_Success(t *testing.T) {
 	outStream, errStream := new(bytes.Buffer), new(bytes.Buffer)
 	cl := NewCLI(outStream, errStream)
 	target := "testdata"
-	status := cl.run(target, false, 0)
+	status := cl.run(target, false, 500)
 	if status != ExitCodeOK {
-		t.Errorf("ExitStatus=%d, want %d", status, ExitCodeOK)
+		t.Fatalf("ExitStatus=%d, want %d", status, ExitCodeOK)
 	}
 	actualList := strings.Split(outStream.String(), "\n")
 	// last element is unused
