@@ -94,6 +94,7 @@ func (c *CLI) run(target string, debug bool, bufSize int64) int {
 		fmt.Fprintln(c.errStream, err)
 		return ExitCodeFail
 	}
+	defer f.Close()
 
 	finfo, err := f.Stat()
 	if err != nil {
