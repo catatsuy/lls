@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"bytes"
 	"flag"
 	"fmt"
 	"io"
@@ -138,8 +137,7 @@ func (c *CLI) run(target string, debug bool, bufSize int) int {
 			}
 
 			bb := (*[256]byte)(unsafe.Pointer(&dirent.Name[0]))
-			blen := bytes.IndexByte(bb[:], 0)
-			name := string(bb[0:blen])
+			name := string(bb[0:blen(*bb)])
 
 			if name == "." || name == ".." {
 				// ignore
@@ -150,4 +148,13 @@ func (c *CLI) run(target string, debug bool, bufSize int) int {
 	}
 
 	return ExitCodeOK
+}
+
+func blen(b [256]byte) int {
+	for i := 0; i < len(b); i++ {
+		if b[i] == 0 {
+			return i
+		}
+	}
+	return len(b)
 }
