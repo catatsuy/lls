@@ -136,7 +136,7 @@ func (c *CLI) run(target string, debug bool, bufSize int) int {
 				continue
 			}
 
-			bb := (*[256]byte)(unsafe.Pointer(&dirent.Name[0]))
+			bb := (*[256]byte)(unsafe.Pointer(&dirent.Name))
 			name := string(bb[0:blen(*bb)])
 
 			if name == "." || name == ".." {
