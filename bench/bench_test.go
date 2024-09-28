@@ -11,14 +11,14 @@ import (
 var rd = rand.New(rand.NewSource(time.Now().UnixNano()))
 
 func BenchmarkUseStringCast(b *testing.B) {
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		bb, _ := genByteArray256()
 		_ = string(bb[0:256])
 	}
 }
 
 func BenchmarkUseUnsafeString(b *testing.B) {
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		bb, _ := genByteArray256()
 		_ = unsafe.String(&bb[0:256][0], 256)
 	}
