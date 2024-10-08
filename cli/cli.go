@@ -137,7 +137,10 @@ func (c *CLI) run(target string, debug bool, bufSize int) int {
 			}
 
 			bb := (*[256]byte)(unsafe.Pointer(&dirent.Name))
-			name := string(bb[0:blen(*bb)])
+			// name := string(bb[0:blen(*bb)])
+			// to optimize for speed, do the following:
+			l := blen(*bb)
+			name := unsafe.String(&bb[0:l][0], l)
 
 			if name == "." || name == ".." {
 				// ignore
