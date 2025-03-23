@@ -4,15 +4,11 @@ jobs:
   test:
     name: Build
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        go: ["1.24.1"]
     steps:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: ${{ matrix.go }}
-        id: go
+          go-version: 1.24.1
 
       - name: Check out code into the Go module directory
         uses: actions/checkout@v4
