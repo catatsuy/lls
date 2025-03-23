@@ -24,6 +24,17 @@
       "matchStrings": [
         "go-version: (?<currentValue>[0-9]*.[0-9]*.[0-9]*)"
       ]
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [
+        ".github/workflows/go.yml"
+      ],
+      "datasourceTemplate": "golang-version",
+      "depNameTemplate": "golang",
+      "matchStrings": [
+        "go: \\[\"(?<currentValue>[0-9]*.[0-9]*.[0-9]*)\"\\]"
+      ]
     }
   ],
   "postUpdateOptions": [
