@@ -3,7 +3,7 @@ package cli
 import (
 	"bytes"
 	"os"
-	"sort"
+	"slices"
 	"strings"
 	"testing"
 
@@ -22,7 +22,7 @@ func TestRun_Success(t *testing.T) {
 	// last element is unused
 	actualList = actualList[:len(actualList)-1]
 	expectedList := dirList(t, target)
-	sort.Slice(actualList, func(i, j int) bool { return actualList[i] < actualList[j] })
+	slices.Sort(actualList)
 
 	if diff := cmp.Diff(actualList, expectedList); diff != "" {
 		t.Errorf("file list mismatch (-actual +expected):\n%s", diff)
