@@ -153,7 +153,7 @@ func (c *CLI) run(target string, debug bool, bufSize int) int {
 }
 
 func blen(b [256]byte) int {
-	for i := 0; i < len(b); i++ {
+	for i := range len(b) {
 		if b[i] == 0 {
 			return i
 		}
